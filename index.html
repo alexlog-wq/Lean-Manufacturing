@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Questionário | Lean Manufacturing, Fordismo e Toyotismo</title>
+<style>
+:root{
+  --bg:#070b14; --panel:#0f1626; --panel2:#141d33; --line:#22304f;
+  --txt:#e6edf7; --mut:#8b9bb8; --cy:#22d3ee; --vi:#8b5cf6; --ok:#34d399; --err:#f87171; --warn:#fbbf24;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%}
+body{
+  font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;
+  background:radial-gradient(1200px 600px at 10% -10%,#12234a55,transparent),
+             radial-gradient(900px 500px at 100% 0%,#3b1d7a40,transparent),var(--bg);
+  color:var(--txt);line-height:1.55;padding:20px 14px 60px;
+}
+.wrap{max-width:860px;margin:0 auto}
+header.top{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.logo{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--cy),var(--vi));display:grid;place-items:center;font-weight:800;color:#06101e;font-size:18px;box-shadow:0 0 24px #22d3ee55}
+.top h1{font-size:1.05rem;letter-spacing:.3px}
+.top small{color:var(--mut);display:block;font-size:.78rem}
+.card{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:18px;padding:26px;box-shadow:0 10px 40px #00000066}
+h2{font-size:1.5rem;margin-bottom:6px}
+.sub{color:var(--mut);margin-bottom:18px}
+.tag{display:inline-block;font-size:.72rem;letter-spacing:1.2px;text-transform:uppercase;color:var(--cy);border:1px solid #22d3ee55;padding:3px 10px;border-radius:99px;margin-bottom:12px}
+ul.info{list-style:none;margin:14px 0 22px}
+ul.info li{padding:8px 0 8px 26px;position:relative;color:#c9d6ee;border-bottom:1px dashed #22304f}
+ul.info li:before{content:"\25B8";position:absolute;left:4px;color:var(--cy)}
+label{display:block;font-size:.85rem;color:var(--mut);margin-bottom:6px}
+input[type=text]{width:100%;padding:14px 16px;border-radius:12px;border:1px solid var(--line);background:#0a1120;color:var(--txt);font-size:1rem;outline:none;transition:.2s}
+input[type=text]:focus{border-color:var(--cy);box-shadow:0 0 0 3px #22d3ee22}
+.btn{cursor:pointer;border:0;border-radius:12px;padding:13px 22px;font-size:.95rem;font-weight:700;color:#06101e;background:linear-gradient(135deg,var(--cy),#60a5fa);transition:.2s;font-family:inherit}
+.btn:hover{transform:translateY(-1px);box-shadow:0 6px 24px #22d3ee44}
+.btn.sec{background:transparent;color:var(--txt);border:1px solid var(--line)}
+.btn.sec:hover{border-color:var(--cy);box-shadow:none}
+.btn:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none}
+.err{color:var(--err);font-size:.85rem;margin-top:8px;min-height:1.2em}
+.hidden{display:none!important}
+.progress{height:8px;background:#0a1120;border-radius:99px;overflow:hidden;border:1px solid var(--line)}
+.progress>div{height:100%;width:0;background:linear-gradient(90deg,var(--cy),var(--vi));transition:width .3s}
+.meta{display:flex;justify-content:space-between;font-size:.82rem;color:var(--mut);margin:10px 0 18px}
+.qnum{color:var(--cy);font-weight:700;letter-spacing:1px;font-size:.8rem;margin-bottom:8px}
+.qtext{font-size:1.12rem;font-weight:600;margin-bottom:18px}
+.opt{display:flex;gap:14px;align-items:flex-start;width:100%;text-align:left;cursor:pointer;background:#0a1120;color:var(--txt);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:10px;font-size:.98rem;font-family:inherit;transition:.15s}
+.opt:hover{border-color:#22d3ee88;background:#0c1528}
+.opt .l{flex:0 0 32px;height:32px;border-radius:9px;display:grid;place-items:center;font-weight:800;background:#16213b;color:var(--cy)}
+.opt.sel{border-color:var(--cy);background:#0d2236;box-shadow:0 0 0 2px #22d3ee33}
+.opt.sel .l{background:var(--cy);color:#06101e}
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:20px;flex-wrap:wrap}
+.grid{display:grid;grid-template-columns:repeat(10,1fr);gap:6px;margin-top:22px}
+.grid button{cursor:pointer;aspect-ratio:1;border-radius:8px;border:1px solid var(--line);background:#0a1120;color:var(--mut);font-size:.75rem;font-weight:700;font-family:inherit}
+.grid button.done{background:#0d2236;color:var(--cy);border-color:#22d3ee66}
+.grid button.cur{outline:2px solid var(--vi)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}
+.stat{background:#0a1120;border:1px solid var(--line);border-radius:14px;padding:14px;text-align:center}
+.stat b{display:block;font-size:1.7rem}
+.stat span{font-size:.75rem;color:var(--mut);text-transform:uppercase;letter-spacing:1px}
+.stat.ok b{color:var(--ok)} .stat.er b{color:var(--err)} .stat.pc b{color:var(--cy)}
+h3{margin:24px 0 10px;font-size:1.05rem}
+.rowok{padding:8px 12px;border-left:3px solid var(--ok);background:#0a1120;border-radius:8px;margin-bottom:6px;font-size:.9rem;color:#c9d6ee}
+.rowok b{color:var(--ok)}
+.wrong{border:1px solid #f8717144;background:#150e16;border-radius:14px;padding:14px 16px;margin-bottom:12px}
+.wrong .t{font-weight:600;margin-bottom:8px}
+.wrong .a{font-size:.9rem;margin:3px 0}
+.wrong .a.m{color:var(--err)} .wrong .a.c{color:var(--ok)}
+.wrong .x{margin-top:8px;font-size:.88rem;color:#c9d6ee;border-top:1px dashed #3a2a3a;padding-top:8px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+.note{font-size:.82rem;color:var(--mut);margin-top:14px}
+.alert{display:none;margin-top:16px;padding:12px 14px;border-radius:12px;border:1px solid #fbbf2466;background:#2a2108;color:var(--warn);font-size:.92rem;font-weight:600}
+.alert.on{display:block}
+.grid button.miss{border-color:var(--warn);color:var(--warn)}
+.modal{position:fixed;inset:0;background:#000000b3;display:none;align-items:center;justify-content:center;padding:18px;z-index:50}
+.modal.on{display:flex}
+.modal .box{max-width:420px;width:100%;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:24px;box-shadow:0 20px 60px #000}
+.modal h3{margin:0 0 8px}
+.modal p{color:var(--mut);margin-bottom:18px}
+.modal .row{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+@media(max-width:560px){.stats{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:repeat(6,1fr)}.card{padding:18px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="logo">LG</div>
+    <div><h1>Técnico em Logística</h1><small>Lean Manufacturing, Fordismo e Toyotismo</small></div>
+  </header>
+
+  <!-- TELA INICIAL -->
+  <section id="s-start" class="card">
+    <span class="tag">Questionário online</span>
+    <h2>Lean Manufacturing, Fordismo e Toyotismo</h2>
+    <p class="sub">Teste seus conhecimentos sobre a evolução dos sistemas de produção e a aplicação na logística.</p>
+    <ul class="info">
+      <li>30 questões objetivas, com alternativas de A a D e apenas uma correta</li>
+      <li>Você pode voltar e alterar respostas antes de finalizar</li>
+      <li>O resultado, o gabarito comentado e o relatório em PDF aparecem ao final</li>
+      <li>Baixe o relatório em PDF e entregue ao professor</li>
+    </ul>
+    <label for="nome">Digite seu nome completo para começar</label>
+    <input type="text" id="nome" placeholder="Ex.: Maria da Silva" autocomplete="name" maxlength="80">
+    <div class="err" id="nome-err"></div>
+    <button class="btn" id="btn-start" style="margin-top:10px">Iniciar questionário</button>
+  </section>
+
+  <!-- QUESTIONÁRIO -->
+  <section id="s-quiz" class="card hidden">
+    <div class="progress"><div id="bar"></div></div>
+    <div class="meta"><span id="who"></span><span id="count"></span></div>
+    <div class="qnum" id="qnum"></div>
+    <div class="qtext" id="qtext"></div>
+    <div id="opts"></div>
+    <div class="nav">
+      <button class="btn sec" id="prev">Anterior</button>
+      <button class="btn" id="next">Próxima</button>
+    </div>
+    <div class="alert" id="quiz-err"></div>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <div class="modal" id="modal">
+    <div class="box">
+      <h3>Finalizar questionário?</h3>
+      <p>Você respondeu todas as questões. Depois de finalizar, não será possível alterar as respostas.</p>
+      <div class="row">
+        <button class="btn sec" id="m-back">Revisar</button>
+        <button class="btn" id="m-ok">Finalizar agora</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULTADO -->
+  <section id="s-result" class="card hidden">
+    <span class="tag">Resultado</span>
+    <h2 id="r-title"></h2>
+    <p class="sub" id="r-sub"></p>
+    <div class="stats">
+      <div class="stat"><b id="r-total">0</b><span>Questões</span></div>
+      <div class="stat ok"><b id="r-ok">0</b><span>Acertos</span></div>
+      <div class="stat er"><b id="r-er">0</b><span>Erros</span></div>
+      <div class="stat pc"><b id="r-pc">0%</b><span>Aproveitamento</span></div>
+    </div>
+    <div class="actions">
+      <button class="btn" id="btn-pdf">Gerar PDF do resultado</button>
+    </div>
+    <div class="note" id="pdf-note"></div>
+    <h3>Questões acertadas</h3>
+    <div id="l-ok"></div>
+    <h3>Questões erradas</h3>
+    <div id="l-er"></div>
+  </section>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+"use strict";
+var CURSO = "Técnico em Logística";
+var ASSUNTO = "Lean Manufacturing, Fordismo e Toyotismo";
+
+/* Gabarito definido internamente (codificado) e nunca exibido antes da finalização */
+var KEY = atob("Q0FEQkJEQUNEQ0FCQURDQkRBQ0JDREJBREFCQ0FE");
+
+var Q = [
+ {q:"Qual é a principal característica do sistema de produção criado por Henry Ford?",
+  o:["Produção artesanal sob encomenda, com peças ajustadas à mão em cada veículo produzido","Produção puxada pela demanda, em pequenos lotes e com grande variedade de modelos","Produção em massa, com linha de montagem móvel e peças intercambiáveis","Produção terceirizada, com cada etapa executada por fornecedores independentes"],
+  e:"O fordismo se baseia na produção em massa de produtos padronizados, usando linha de montagem móvel e peças intercambiáveis para reduzir custo e tempo."},
+ {q:"Em que ano Ford implantou a linha de montagem móvel em Highland Park, reduzindo drasticamente o tempo de montagem do Modelo T?",
+  o:["1913","1925","1938","1950"],
+  e:"A linha móvel foi implantada em 1913. O tempo de montagem do chassi caiu de cerca de 12 horas para aproximadamente 1h30."},
+ {q:"Uma fábrica produz um único modelo, em enorme volume, para diluir os custos fixos e baixar o custo por unidade. Qual conceito sustenta essa estratégia?",
+  o:["Obsolescência programada, que estimula a troca frequente do produto pelo cliente","Produção sob demanda, que fabrica somente após o pedido confirmado","Diferenciação de nicho, que atende pequenos grupos com produtos exclusivos","Economia de escala, em que o custo unitário cai conforme o volume aumenta"],
+  e:"A economia de escala é o princípio do fordismo: quanto maior o volume produzido, menor o custo por unidade."},
+ {q:"Em 1914, Ford passou a pagar cinco dólares por dia aos operários. Qual foi o principal objetivo dessa medida?",
+  o:["Enfraquecer a atuação dos sindicatos e ampliar o controle sobre os fornecedores","Reduzir a rotatividade e criar mercado consumidor entre os operários","Substituir o pagamento fixo por prêmios de produtividade pagos por equipe","Financiar a abertura de novas fábricas em outros países com o lucro obtido"],
+  e:"O salário maior reduziu a rotatividade (que era altíssima na linha repetitiva) e ajudou a criar consumidores para a produção em massa."},
+ {q:"O complexo River Rouge, da Ford, controlava desde a matéria-prima até a montagem final do veículo. Esse modelo de organização é chamado de:",
+  o:["Terceirização, em que atividades são entregues a empresas especializadas","Verticalização, em que a empresa controla várias etapas da produção","Franchising, em que a marca é cedida a terceiros mediante pagamento de royalties","Joint venture, em que duas empresas criam um negócio em conjunto"],
+  e:"Verticalização é o controle de várias etapas da cadeia pela própria empresa, característica marcante do fordismo."},
+ {q:"O fordismo herdou do taylorismo um princípio fundamental. Qual é ele?",
+  o:["Autonomia total do operário para escolher o método e o ritmo do seu trabalho","Rodízio constante de funções para evitar a monotonia e o desgaste do operário","Equipes autogeridas que definem sozinhas as metas e a forma de produzir","Estudo de tempos e movimentos: a gerência planeja e o operário executa"],
+  e:"Taylor propôs a separação entre planejar e executar, com tarefas simples e cronometradas. Ford levou isso à linha de montagem."},
+ {q:"O Sistema Toyota de Produção (toyotismo) surgiu em qual contexto?",
+  o:["No Japão do pós-guerra, liderado por Taiichi Ohno, em cenário de escassez","Nos Estados Unidos dos anos 1910, liderado por Henry Ford, em cenário de abundância","Nos Estados Unidos dos anos 1920, liderado por Alfred Sloan, com várias marcas","Na Alemanha dos anos 1950, liderada por Heinz Nordhoff, no pós-guerra imediato"],
+  e:"O STP nasceu na Toyota, no Japão pós-guerra, com Taiichi Ohno e Eiji Toyoda, em um mercado pequeno e com poucos recursos. Daí a obsessão por eliminar desperdícios."},
+ {q:"Quais são os dois pilares do Sistema Toyota de Produção?",
+  o:["Kaizen e 5S","Kanban e Heijunka","Just in Time e Jidoka","Poka-yoke e Andon"],
+  e:"A famosa 'casa' do STP é sustentada por dois pilares: Just in Time (fluxo no tempo certo) e Jidoka (qualidade na origem, com autonomação)."},
+ {q:"O conceito de Just in Time (JIT) consiste em:",
+  o:["Produzir o máximo possível para manter um estoque de segurança sempre elevado","Comprar grandes lotes de insumos para obter descontos por volume de compra","Antecipar a produção em relação à previsão de vendas para evitar atrasos","Produzir e entregar somente o necessário, na quantidade e no momento certos"],
+  e:"JIT significa fornecer o item certo, na quantidade certa, no momento certo, evitando estoques e superprodução."},
+ {q:"Qual é a função do Kanban em um sistema de produção puxada?",
+  o:["Medir o tempo de ciclo de cada operador ao longo de todo o turno de trabalho","Programar as manutenções preventivas de todas as máquinas da fábrica","Sinalizar e autorizar a produção ou a reposição conforme o consumo real","Registrar os defeitos encontrados e calcular o custo da má qualidade"],
+  e:"O Kanban (cartão/sinal) autoriza a produção ou a movimentação de material apenas quando o processo seguinte consome, operacionalizando a produção puxada."},
+ {q:"O que é Jidoka, também chamada de autonomação?",
+  o:["Dar à máquina e ao operador o poder de parar o processo ao notar anomalia","Automatizar totalmente a linha, retirando os operários de todo o processo produtivo","Reduzir o tempo de troca de ferramentas entre um produto e outro","Nivelar o volume e o mix de produtos ao longo do dia de produção"],
+  e:"Jidoka é automação com toque humano: o processo para ao detectar problema, impedindo que o defeito avance. Nasceu no tear automático de Sakichi Toyoda."},
+ {q:"Um dispositivo de encaixe impede que o operário monte a peça invertida. Essa ferramenta de prevenção de erros é conhecida como:",
+  o:["Heijunka","Poka-yoke","Kanban","Gemba"],
+  e:"Poka-yoke é qualquer dispositivo ou método à prova de erros, que impede ou torna evidente a falha humana (ideia de Shigeo Shingo)."},
+ {q:"Qual das opções abaixo NÃO é um dos sete desperdícios clássicos do Lean?",
+  o:["Treinamento de colaboradores","Superprodução","Movimentação desnecessária","Produção de itens defeituosos"],
+  e:"Os 7 desperdícios são: superprodução, espera, transporte, processamento excessivo, estoque, movimentação e defeitos. Treinar pessoas é investimento."},
+ {q:"Taiichi Ohno considerava um desperdício o pior de todos, por dar origem aos demais. Qual é ele?",
+  o:["Espera","Defeitos","Movimentação","Superprodução"],
+  e:"Produzir além do necessário gera estoque, transporte, espaço e retrabalho. Por isso a superprodução é vista como a raiz dos outros desperdícios."},
+ {q:"Em um armazém, os conferentes ficam 20 minutos parados esperando a liberação das notas fiscais para iniciar o descarregamento. Qual desperdício do Lean está presente?",
+  o:["Superprodução","Processamento excessivo","Espera","Transporte"],
+  e:"Tempo ocioso aguardando algo (material, informação, liberação) é desperdício de espera, que não agrega valor ao cliente."},
+ {q:"O Heijunka, no Sistema Toyota de Produção, refere-se a:",
+  o:["Troca rápida de ferramentas para reduzir o tempo de setup","Nivelamento do volume e do mix de produção ao longo do dia","Inspeção de 100% dos itens ao final de cada processo produtivo","Padronização dos métodos e do tempo de cada operação"],
+  e:"Heijunka é o nivelamento da produção, evitando picos e vales. Isso dá estabilidade ao fluxo e reduz estoques e horas extras."},
+ {q:"Sobre o Kaizen, é correto afirmar que ele representa:",
+  o:["Grandes inovações radicais feitas por consultorias externas em projetos pontuais","Troca completa dos equipamentos sempre que a tecnologia é atualizada","Auditorias anuais de conformidade realizadas somente pela diretoria","Melhoria contínua e incremental, com participação de todos os colaboradores"],
+  e:"Kaizen significa 'mudar para melhor': pequenas melhorias diárias, feitas por todos, do chão de fábrica à gerência."},
+ {q:"No programa 5S, o primeiro senso (Seiri) é o senso de utilização, que consiste em:",
+  o:["Separar o necessário do desnecessário e descartar o que não tem uso","Organizar cada item em local definido, de fácil acesso e identificação","Limpar o ambiente e as ferramentas, identificando as fontes de sujeira","Manter a disciplina e o hábito de cumprir os padrões estabelecidos"],
+  e:"Seiri é descartar o que não é necessário. Os 5S: Seiri (utilização), Seiton (organização), Seiso (limpeza), Seiketsu (padronização) e Shitsuke (disciplina)."},
+ {q:"As ferramentas de uma oficina ficam em um painel com o contorno de cada uma desenhado, de modo que todos saibam onde guardar. Qual senso do 5S está sendo aplicado?",
+  o:["Seiri","Seiso","Seiton","Shitsuke"],
+  e:"Seiton é o senso de organização: um lugar para cada coisa e cada coisa em seu lugar, com identificação visual."},
+ {q:"O que é o takt time?",
+  o:["O tempo que um produto leva desde a matéria-prima até a entrega ao cliente","O ritmo de produção necessário para atender a demanda do cliente","O tempo em que a máquina permanece parada para manutenção programada","O tempo médio de entrega praticado pelos fornecedores da empresa"],
+  e:"Takt time = tempo disponível de produção ÷ demanda do cliente. É o compasso que a produção deve seguir para atender a demanda."},
+ {q:"Uma célula tem 480 minutos líquidos de trabalho por turno e o cliente demanda 240 peças por turno. Qual é o takt time?",
+  o:["0,5 minuto por peça","1 minuto por peça","2 minutos por peça","4 minutos por peça"],
+  e:"Takt time = 480 min ÷ 240 peças = 2 minutos por peça."},
+ {q:"Segundo Womack e Jones, qual é o primeiro princípio do pensamento enxuto (Lean Thinking)?",
+  o:["Buscar a perfeição por meio da melhoria contínua","Produzir de forma puxada, conforme a demanda do cliente","Fazer o fluxo de valor correr sem interrupções","Especificar o valor sob a ótica do cliente"],
+  e:"Os cinco princípios são: valor, fluxo de valor, fluxo, produção puxada e perfeição. Tudo começa por definir o que o cliente considera valor."},
+ {q:"Qual é o objetivo do Mapeamento do Fluxo de Valor (VSM)?",
+  o:["Calcular o lucro unitário de cada produto e a margem de contribuição da empresa","Visualizar o fluxo de material e informação e identificar desperdícios","Definir a remuneração dos operários conforme a produtividade da equipe","Auditar a situação fiscal e contratual de todos os fornecedores da empresa"],
+  e:"O VSM desenha o fluxo de material e de informação do pedido à entrega, separando o que agrega valor do que é desperdício para orientar melhorias."},
+ {q:"Qual alternativa compara corretamente o papel do trabalhador no fordismo e no toyotismo?",
+  o:["No fordismo é especializado em uma tarefa; no toyotismo é polivalente e opera várias máquinas","No fordismo é polivalente e opera várias máquinas; no toyotismo é especializado em uma tarefa","Em ambos os modelos o trabalhador decide sozinho o método e o ritmo de produção","Em ambos os modelos o trabalhador é contratado apenas pelo tempo de duração do projeto"],
+  e:"O operário fordista repete uma tarefa simples. No toyotismo, o trabalhador é multifuncional, atua em células e participa das melhorias."},
+ {q:"Qual alternativa descreve corretamente a lógica de produção do fordismo e do toyotismo?",
+  o:["Fordismo: produção puxada pela demanda; toyotismo: produção empurrada por previsões","Fordismo e toyotismo: produção totalmente sob encomenda, sem qualquer estoque","Fordismo e toyotismo: produção empurrada, com grandes estoques de segurança","Fordismo: produção empurrada, para estoque; toyotismo: puxada pela demanda real"],
+  e:"No fordismo produz-se em grande volume e depois se vende (empurrada). No toyotismo produz-se o que o cliente consome (puxada)."},
+ {q:"Para o Sistema Toyota de Produção, o estoque elevado deve ser visto como:",
+  o:["Desperdício que esconde problemas de qualidade e quebras","Ativo estratégico que sempre deve ser ampliado para proteger a empresa","Garantia de qualidade, pois permite selecionar as melhores peças","Indicador de eficiência, já que mostra capacidade de produção"],
+  e:"A Toyota usa a imagem do rio e das pedras: o estoque alto é o nível da água que esconde as pedras (problemas). Reduzir o estoque expõe e permite resolver as causas."},
+ {q:"Como é a relação típica entre a montadora e os fornecedores no modelo toyotista?",
+  o:["Concorrência acirrada por menor preço, com troca frequente de fornecedores","Parceria de longo prazo, com poucos fornecedores e entregas frequentes","Verticalização total, sem qualquer fornecedor externo envolvido","Compra exclusiva de itens importados, em grandes lotes trimestrais"],
+  e:"No toyotismo os fornecedores são parceiros: poucos, próximos, com contratos longos e entregas frequentes e sincronizadas com a produção."},
+ {q:"Uma montadora recebe peças de vários fornecedores em um único caminhão, que percorre uma rota programada várias vezes ao dia, em pequenos lotes. Essa prática logística é chamada de:",
+  o:["Dropshipping","Cross-docking","Milk run","Backhaul"],
+  e:"Milk run é a coleta programada e cíclica em vários fornecedores, com lotes pequenos e frequentes. Ela apoia o JIT e reduz estoques e custo de transporte."},
+ {q:"O SMED (Single-Minute Exchange of Die), desenvolvido por Shigeo Shingo, tem como objetivo:",
+  o:["Reduzir o tempo de setup, viabilizando lotes pequenos","Aumentar o tamanho dos lotes para diluir o custo de cada troca de produto","Eliminar a necessidade de manutenção nas máquinas da produção","Medir a satisfação dos clientes após cada entrega realizada"],
+  e:"O SMED reduz o setup, tornando econômico produzir lotes pequenos e variados. Sem ele, o JIT e o Heijunka seriam inviáveis."},
+ {q:"O termo 'Lean' (enxuto) foi amplamente popularizado por qual obra?",
+  o:["'O Sistema Toyota de Produção', de Taiichi Ohno, publicado em 1978","'Princípios de Administração Científica', de Frederick Taylor, de 1911","'Minha Vida e Minha Obra', de Henry Ford, publicado em 1922","'A Máquina que Mudou o Mundo', de Womack, Jones e Roos, de 1990"],
+  e:"O livro do MIT, de 1990, comparou a indústria automobilística mundial e difundiu o termo 'produção enxuta' (lean production) no Ocidente."}
+];
+
+var ans = new Array(Q.length).fill(-1);
+var cur = 0, nome = "", dataStr = "", pdfName = "", lastOk = [], lastEr = [], lastPc = 0;
+var L = ["A","B","C","D"];
+function $(id){return document.getElementById(id)}
+function show(id){["s-start","s-quiz","s-result"].forEach(function(s){$(s).classList.toggle("hidden",s!==id)});window.scrollTo(0,0)}
+
+$("btn-start").onclick = function(){
+  var v = $("nome").value.trim().replace(/\s+/g," ");
+  if(v.split(" ").length<2 || v.length<5){ $("nome-err").textContent="Informe seu nome completo (nome e sobrenome)."; return; }
+  nome = v; $("nome-err").textContent="";
+  $("who").textContent = nome; render(); show("s-quiz");
+};
+$("nome").addEventListener("keydown",function(e){if(e.key==="Enter")$("btn-start").click()});
+
+function render(){
+  var q = Q[cur];
+  $("qnum").textContent = "QUESTÃO " + (cur+1) + " DE " + Q.length;
+  $("qtext").textContent = q.q;
+  $("count").textContent = ans.filter(function(a){return a>=0}).length + " de " + Q.length + " respondidas";
+  $("bar").style.width = ((cur+1)/Q.length*100)+"%";
+  var h = "";
+  q.o.forEach(function(t,i){
+    h += '<button class="opt'+(ans[cur]===i?' sel':'')+'" data-i="'+i+'"><span class="l">'+L[i]+'</span><span></span></button>';
+  });
+  $("opts").innerHTML = h;
+  var btns = $("opts").querySelectorAll(".opt");
+  btns.forEach(function(b,i){
+    b.children[1].textContent = q.o[i];
+    b.onclick = function(){ ans[cur]=i; render(); };
+  });
+  $("prev").disabled = cur===0;
+  $("next").textContent = cur===Q.length-1 ? "Finalizar" : "Próxima";
+  $("quiz-err").classList.remove("on");
+  var g = "";
+  for(var k=0;k<Q.length;k++) g += '<button class="'+(ans[k]>=0?'done ':'')+(k===cur?'cur':'')+'" data-k="'+k+'">'+(k+1)+'</button>';
+  $("grid").innerHTML = g;
+  $("grid").querySelectorAll("button").forEach(function(b){b.onclick=function(){cur=+b.dataset.k;render()}});
+}
+$("prev").onclick = function(){ if(cur>0){cur--;render()} };
+$("next").onclick = function(){
+  if(cur<Q.length-1){ cur++; render(); return; }
+  var miss = []; ans.forEach(function(a,i){ if(a<0) miss.push(i); });
+  if(miss.length){
+    var box = $("quiz-err");
+    box.textContent = "Atenção: ainda faltam respostas nas questões " + miss.map(function(m){return m+1}).join(", ") + ". Responda todas para finalizar.";
+    box.classList.add("on");
+    $("grid").querySelectorAll("button").forEach(function(b){ if(ans[+b.dataset.k]<0) b.classList.add("miss"); });
+    box.scrollIntoView({behavior:"smooth",block:"center"});
+    return;
+  }
+  $("modal").classList.add("on");
+};
+$("m-back").onclick = function(){ $("modal").classList.remove("on"); };
+$("m-ok").onclick = function(){ $("modal").classList.remove("on"); finish(); };
+
+function finish(){
+  var ok=[], er=[];
+  Q.forEach(function(q,i){
+    var item = {n:i+1, q:q.q, m:ans[i], c:KEY.charCodeAt(i)-65, e:q.e, o:q.o};
+    (item.m===item.c ? ok : er).push(item);
+  });
+  dataStr = new Date().toLocaleString("pt-BR",{dateStyle:"long",timeStyle:"short"});
+  var pc = Math.round(ok.length/Q.length*100);
+  $("r-title").textContent = nome;
+  $("r-sub").textContent = CURSO + " | " + ASSUNTO + " | " + dataStr;
+  $("r-total").textContent = Q.length; $("r-ok").textContent = ok.length; $("r-er").textContent = er.length; $("r-pc").textContent = pc+"%";
+
+  var a = "";
+  ok.forEach(function(x){ a += '<div class="rowok"><b>Questão '+x.n+'</b> | resposta '+L[x.c]+'<br>'+esc(x.q)+'</div>'; });
+  $("l-ok").innerHTML = a || '<div class="note">Nenhuma questão acertada.</div>';
+  var b = "";
+  er.forEach(function(x){
+    b += '<div class="wrong"><div class="t">Questão '+x.n+'. '+esc(x.q)+'</div>'
+      + '<div class="a m">Sua resposta: '+L[x.m]+') '+esc(x.o[x.m])+'</div>'
+      + '<div class="a c">Resposta correta: '+L[x.c]+') '+esc(x.o[x.c])+'</div>'
+      + '<div class="x"><b>Explicação:</b> '+esc(x.e)+'</div></div>';
+  });
+  $("l-er").innerHTML = b || '<div class="note">Parabéns! Você não errou nenhuma questão.</div>';
+  lastOk = ok; lastEr = er; lastPc = pc;
+  show("s-result");
+}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+
+/* ---------- PDF ---------- */
+function buildPDF(ok, er, pc){
+  if(!window.jspdf){ throw new Error("jsPDF indisponível"); }
+  var doc = new window.jspdf.jsPDF({unit:"mm",format:"a4"});
+  var W = 210, M = 16, CW = W-2*M, y = 0;
+  var NAVY=[10,20,45], CY=[8,145,178], GREEN=[22,163,74], RED=[220,38,38], GRAY=[90,100,120];
+
+  function header(){
+    doc.setFillColor.apply(doc,NAVY); doc.rect(0,0,W,30,"F");
+    doc.setFillColor.apply(doc,CY); doc.rect(0,30,W,1.6,"F");
+    doc.setTextColor(255,255,255); doc.setFont("helvetica","bold"); doc.setFontSize(16);
+    doc.text("Relatório Individual de Desempenho",M,14);
+    doc.setFont("helvetica","normal"); doc.setFontSize(10);
+    doc.text(ASSUNTO,M,22);
+  }
+  function footer(){
+    var n = doc.internal.getNumberOfPages();
+    for(var p=1;p<=n;p++){
+      doc.setPage(p); doc.setFontSize(8); doc.setTextColor.apply(doc,GRAY); doc.setFont("helvetica","normal");
+      doc.text(nome+" | "+CURSO,M,290);
+      doc.text("Página "+p+" de "+n,W-M,290,{align:"right"});
+    }
+  }
+  function need(h){ if(y+h>282){ doc.addPage(); y=18; } }
+  function para(txt,size,bold,color,indent,gap){
+    doc.setFont("helvetica",bold?"bold":"normal"); doc.setFontSize(size); doc.setTextColor.apply(doc,color);
+    var lines = doc.splitTextToSize(txt, CW-indent), lh = size*0.43+0.9;
+    for(var i=0;i<lines.length;i++){ need(lh); doc.text(lines[i],M+indent,y); y+=lh; }
+    y += (gap||0);
+  }
+  function section(t,color){
+    need(14); y+=3;
+    doc.setFillColor.apply(doc,color); doc.rect(M,y-5,2.2,7,"F");
+    doc.setFont("helvetica","bold"); doc.setFontSize(12); doc.setTextColor.apply(doc,NAVY);
+    doc.text(t,M+5,y); y+=7;
+  }
+
+  header(); y = 42;
+  // dados do aluno
+  doc.setDrawColor(210,218,230); doc.setFillColor(246,248,252);
+  doc.roundedRect(M,y-6,CW,32,2,2,"FD");
+  var rows = [["Aluno",nome],["Curso",CURSO],["Assunto",ASSUNTO],["Data da realização",dataStr]];
+  rows.forEach(function(r,i){
+    doc.setFont("helvetica","bold"); doc.setFontSize(10); doc.setTextColor.apply(doc,GRAY);
+    doc.text(r[0]+":",M+4,y+i*7);
+    doc.setFont("helvetica","normal"); doc.setTextColor.apply(doc,NAVY);
+    doc.text(doc.splitTextToSize(r[1],CW-48)[0],M+44,y+i*7);
+  });
+  y += 36;
+  // quadros de resumo
+  var boxes = [["Total de questões",String(Q.length),NAVY],["Acertos",String(ok.length),GREEN],["Erros",String(er.length),RED],["Aproveitamento",pc+"%",CY]];
+  var bw = (CW-9)/4;
+  boxes.forEach(function(b,i){
+    var x = M+i*(bw+3);
+    doc.setFillColor.apply(doc,b[2]); doc.roundedRect(x,y,bw,20,2,2,"F");
+    doc.setTextColor(255,255,255); doc.setFont("helvetica","bold"); doc.setFontSize(18);
+    doc.text(b[1],x+bw/2,y+10,{align:"center"});
+    doc.setFont("helvetica","normal"); doc.setFontSize(8);
+    doc.text(b[0],x+bw/2,y+16,{align:"center"});
+  });
+  y += 30;
+
+  section("Questões acertadas ("+ok.length+")",GREEN);
+  if(!ok.length) para("Nenhuma questão acertada.",10,false,GRAY,0,2);
+  ok.forEach(function(x){
+    para("Questão "+x.n+" | resposta "+L[x.c]+") "+x.o[x.c],9.5,false,NAVY,0,1.5);
+  });
+
+  section("Questões erradas ("+er.length+")",RED);
+  if(!er.length) para("Parabéns! Nenhuma questão errada.",10,false,GREEN,0,2);
+  er.forEach(function(x){
+    need(30);
+    para("Questão "+x.n+". "+x.q,10,true,NAVY,0,1);
+    para("Resposta marcada: "+L[x.m]+") "+x.o[x.m],9.5,false,RED,3,0.5);
+    para("Resposta correta: "+L[x.c]+") "+x.o[x.c],9.5,false,GREEN,3,0.5);
+    para("Explicação: "+x.e,9.5,false,GRAY,3,0);
+    y += 2.5; doc.setDrawColor(225,230,240); doc.line(M,y-1.2,W-M,y-1.2); y += 2;
+  });
+
+  footer();
+  pdfName = "Relatorio_Lean_Fordismo_Toyotismo_" + nome.normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^A-Za-z0-9]+/g,"_").replace(/^_|_$/g,"") + ".pdf";
+  return doc;
+}
+$("btn-pdf").onclick = function(){
+  var note = $("pdf-note");
+  try{
+    var doc = buildPDF(lastOk, lastEr, lastPc);
+    doc.save(pdfName);
+    note.textContent = "PDF gerado. Verifique a pasta de downloads do seu aparelho.";
+  }catch(e){
+    note.textContent = "Não foi possível gerar o PDF (verifique a conexão com a internet e tente novamente).";
+  }
+};
+</script>
+</body>
+</html>
